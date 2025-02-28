@@ -1,5 +1,5 @@
 import express from "express";
-import Habitacion from "../models/habitacion.model.js"; // ✅ Importación corregida
+import Habitacion from "../models/habitacion.model.js";
 
 const router = express.Router();
 
