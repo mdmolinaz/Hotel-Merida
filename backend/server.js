@@ -1,30 +1,32 @@
 import express from "express";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cors from "cors"; // Importar cors
+import dotenv from "dotenv";
 import habitacionesRoutes from "./routes/habitaciones.routes.js";
 
 dotenv.config();
-
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Conectar a MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("✅ Conectado a MongoDB"))
-    .catch(err => console.error("❌ Error al conectar a MongoDB:", err));
-
-// Middleware para procesar JSON
+// Middlewares
+app.use(cors()); // Habilitar CORS
 app.use(express.json());
 
-// Ruta de prueba
+// Conexión a MongoDB
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ Conectado a MongoDB"))
+  .catch((err) => console.error("❌ Error de conexión a MongoDB:", err));
+
+// Ruta para la raíz
 app.get("/", (req, res) => {
-    res.send("🏨 API del Hotel Mérida funcionando correctamente.");
+  res.send("¡Bienvenido al servidor del hotel!");
 });
 
-// Usar las rutas de habitaciones
+// Rutas
 app.use("/habitaciones", habitacionesRoutes);
 
-// Iniciar el servidor
+// Iniciar servidor
+const PORT = 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
