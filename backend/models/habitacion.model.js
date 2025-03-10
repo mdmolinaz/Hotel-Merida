@@ -7,6 +7,7 @@ const habitacionSchema = new mongoose.Schema(
     comodidades: [{ type: String }],
     imagenes: [{ type: String }],
     tarifa: { type: Number, required: true },
+    capacidad: { type: Number, required: true }, // Nuevo campo
     reviews: [
       {
         usuario: { type: String },
@@ -15,7 +16,7 @@ const habitacionSchema = new mongoose.Schema(
       },
     ],
   },
-  { collection: "habitaciones" } // Especifica el nombre de la colección
+  { collection: "habitaciones" }
 );
 
 export default mongoose.model("Habitacion", habitacionSchema);
