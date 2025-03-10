@@ -74,7 +74,11 @@ const Home = () => {
       </div>
     
       {/* Lista de habitaciones */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
+      <div style={{ 
+        display: "grid", 
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", 
+        gap: "20px" 
+      }}>
         {filteredHabitaciones.length > 0 ? (
           filteredHabitaciones.map((habitacion) => (
             <div 
@@ -84,17 +88,37 @@ const Home = () => {
                 padding: "10px", 
                 borderRadius: "8px", 
                 backgroundColor: "rgba(255, 255, 255, 0.4)", // Fondo blanco con opacidad
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Sombra suave
+                transition: "transform 0.3s ease, box-shadow 0.3s ease", // Efecto hover
+                cursor: "pointer",
               }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+              onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
             >
-              <h2>{habitacion.nombre}</h2>
-              <p>{habitacion.descripcion}</p>
-              <p>Capacidad: {habitacion.capacidad} personas</p>
-              <p>Precio: ${habitacion.tarifa}</p>
-              <img
-                src={habitacion.imagenes[0]} // Usa la ruta relativa
-                alt={habitacion.nombre}
-                style={{ width: "100%", maxWidth: "300px", height: "auto", borderRadius: "8px" }}
-              />
+              {/* Contenedor de la imagen */}
+              <div style={{ 
+                width: "100%", 
+                aspectRatio: "16/9", // Proporción 16:9
+                overflow: "hidden", 
+                borderRadius: "8px", 
+              }}>
+                <img
+                  src={habitacion.imagenes[0]} // Usa la ruta relativa
+                  alt={habitacion.nombre}
+                  style={{ 
+                    width: "100%", 
+                    height: "100%", 
+                    objectFit: "cover", // Ajusta la imagen sin distorsionarla
+                  }}
+                />
+              </div>
+              {/* Contenido de la tarjeta */}
+              <div style={{ padding: "10px" }}>
+                <h2>{habitacion.nombre}</h2>
+                <p>{habitacion.descripcion}</p>
+                <p>Capacidad: {habitacion.capacidad} personas</p>
+                <p>Precio: ${habitacion.tarifa}</p>
+              </div>
             </div>
           ))
         ) : (
