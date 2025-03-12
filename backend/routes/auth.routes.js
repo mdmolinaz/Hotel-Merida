@@ -54,9 +54,9 @@ router.post("/login", async (req, res) => {
 
     // Generar un token JWT
     const token = jwt.sign(
-      { id: user._id, tipo: user.tipo },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { id: user._id, tipo: user.tipo }, // Payload (datos del usuario)
+      process.env.JWT_SECRET, // Clave secreta
+      { expiresIn: "1h" } // Tiempo de expiración del token
     );
 
     res.json({ token, tipo: user.tipo });
@@ -66,4 +66,4 @@ router.post("/login", async (req, res) => {
   }
 });
 
-export default router;
+export default router; // Exporta el router

@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors"; // Importar cors
 import dotenv from "dotenv";
+import authRoutes from "./routes/auth.routes.js"; // Importa authRoutes
 import habitacionesRoutes from "./routes/habitaciones.routes.js";
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 
 // Rutas
 app.use("/habitaciones", habitacionesRoutes);
+app.use("/auth", authRoutes);
 
 // Iniciar servidor
 const PORT = 5000;

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate
 import { getHabitaciones } from "../services/api";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate para redireccionar
 
 const Home = () => {
-  const [habitaciones, setHabitaciones] = useState([]);
-  const [filteredHabitaciones, setFilteredHabitaciones] = useState([]);
+  const [habitaciones, setHabitaciones] = useState([]); // Todas las habitaciones
+  const [filteredHabitaciones, setFilteredHabitaciones] = useState([]); // Habitaciones filtradas
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [capacidad, setCapacidad] = useState("");
+  const [capacidad, setCapacidad] = useState(""); // Estado para la capacidad
   const navigate = useNavigate(); // Hook para redireccionar
 
   // Obtener las habitaciones al cargar el componente
@@ -16,7 +16,7 @@ const Home = () => {
       try {
         const data = await getHabitaciones();
         setHabitaciones(data);
-        setFilteredHabitaciones(data);
+        setFilteredHabitaciones(data); // Inicialmente, mostrar todas las habitaciones
       } catch (error) {
         console.error("❌ Error:", error);
         setError("Error al cargar las habitaciones. Verifica que el backend esté corriendo.");
@@ -31,8 +31,10 @@ const Home = () => {
   // Filtrar habitaciones por capacidad
   useEffect(() => {
     if (capacidad === "") {
+      // Si no hay filtro, mostrar todas las habitaciones
       setFilteredHabitaciones(habitaciones);
     } else {
+      // Filtrar habitaciones por capacidad
       const filtered = habitaciones.filter(
         (habitacion) => habitacion.capacidad >= parseInt(capacidad)
       );
@@ -57,23 +59,40 @@ const Home = () => {
       borderRadius: "10px", 
       boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", 
     }}>
-      <h1>Habitaciones Disponibles</h1>
-
-      {/* Botones de inicio de sesión */}
-      <div style={{ marginBottom: "20px" }}>
+      {/* Botones de Iniciar Sesión y Registrarse */}
+      <div style={{ marginBottom: "20px", textAlign: "center" }}>
         <button 
-          onClick={() => navigate("/cliente")} 
-          style={{ marginRight: "10px", padding: "10px 20px", fontSize: "16px" }}
+          onClick={() => navigate("/login")} // Redirige a /login
+          style={{ 
+            marginRight: "10px", 
+            padding: "10px 20px", 
+            fontSize: "16px", 
+            backgroundColor: "#007bff", 
+            color: "white", 
+            border: "none", 
+            borderRadius: "5px", 
+            cursor: "pointer", 
+          }}
         >
-          Iniciar Sesión como Cliente
+          Iniciar Sesión
         </button>
         <button 
-          onClick={() => navigate("/admin")} 
-          style={{ padding: "10px 20px", fontSize: "16px" }}
+          onClick={() => navigate("/register")} // Redirige a /register
+          style={{ 
+            padding: "10px 20px", 
+            fontSize: "16px", 
+            backgroundColor: "#28a745", 
+            color: "white", 
+            border: "none", 
+            borderRadius: "5px", 
+            cursor: "pointer", 
+          }}
         >
-          Iniciar Sesión como Administrador
+          Registrarse
         </button>
       </div>
+
+      <h1>Habitaciones Disponibles</h1>
 
       {/* Campo de búsqueda por capacidad */}
       <div style={{ marginBottom: "20px" }}>
@@ -111,6 +130,7 @@ const Home = () => {
               onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
               onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
             >
+              {/* Contenedor de la imagen */}
               <div style={{ 
                 width: "100%", 
                 aspectRatio: "16/9", 
@@ -127,6 +147,7 @@ const Home = () => {
                   }}
                 />
               </div>
+              {/* Contenido de la tarjeta */}
               <div style={{ padding: "10px" }}>
                 <h2>{habitacion.nombre}</h2>
                 <p>{habitacion.descripcion}</p>
