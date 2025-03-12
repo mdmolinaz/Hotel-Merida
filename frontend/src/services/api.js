@@ -11,3 +11,31 @@ export const getHabitaciones = async () => {
     throw error;
   }
 };
+
+export const agregarHabitacion = async (habitacion) => {
+  const response = await fetch("http://localhost:5000/habitaciones", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(habitacion),
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al agregar habitación");
+  }
+
+  return response.json();
+};
+
+export const agregarReview = async (habitacionId, review) => {
+  const response = await fetch(`http://localhost:5000/habitaciones/${habitacionId}/reviews`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(review),
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al agregar review");
+  }
+
+  return response.json();
+};

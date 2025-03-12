@@ -1,63 +1,103 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import emailjs from "@emailjs/browser";
+import { AuthContext } from "../context/AuthContext";
+import { getHabitaciones, agregarReview } from "../services/api";
 
 const Cliente = () => {
-  const [formReserva, setFormReserva] = useState({ nombre: "", email: "", fecha: "", habitacion: "" });
-  const [formOpinion, setFormOpinion] = useState({ usuario: "Cliente Logueado", comentario: "", calificacion: 0 });
+  const { user } = useContext(AuthContext); // Obtener el usuario logueado
+  const [habitaciones, setHabitaciones] = useState([]); // Lista de habitaciones
+  const [selectedHabitacion, setSelectedHabitacion] = useState(""); // Habitación seleccionada
+  const [comentario, setComentario] = useState(""); // Comentario de la opinión
+  const [calificacion, setCalificacion] = useState(1); // Calificación (1-5)
   const navigate = useNavigate();
 
-  const handleReservaChange = (e) => setFormReserva({ ...formReserva, [e.target.name]: e.target.value });
-  const handleOpinionChange = (e) => setFormOpinion({ ...formOpinion, [e.target.name]: e.target.value });
+  // Obtener las habitaciones al cargar el componente
+  useEffect(() => {
+    const fetchHabitaciones = async () => {
+      try {
+        const data = await getHabitaciones();
+        setHabitaciones(data);
+      } catch (error) {
+        console.error("Error al obtener habitaciones:", error);
+      }
+    };
 
-  const handleReservaSubmit = (e) => {
-    e.preventDefault();
-    emailjs.send("service_zum1zfm", "template_19rtxgs", formReserva, "ITrY7OmwhkP2HT7V-")
-      .then(() => {
-        alert(`Reserva confirmada para ${formReserva.nombre} el ${formReserva.fecha}. Revisa tu correo.`);
-      })
-      .catch((error) => {
-        console.error("Error al enviar el correo:", error);
-        alert("Hubo un error al enviar el correo. Inténtalo de nuevo.");
-      });
-  };
+    fetchHabitaciones();
+  }, []);
 
-  const handleOpinionSubmit = (e) => {
+  // Manejar el envío de la opinión
+  const handleSubmitOpinion = async (e) => {
     e.preventDefault();
-    alert("Opinión enviada correctamente.");
-    console.log("Opinión:", formOpinion);
+    try {
+      const review = {
+        usuario: user.nombre, // Nombre del usuario logueado
+        comentario,
+        calificacion: parseInt(calificacion),
+      };
+
+      await agregarReview(selectedHabitacion, review); // Enviar la opinión al backend
+      alert("Opinión enviada correctamente");
+      setComentario("");
+      setCalificacion(1);
+    } catch (error) {
+      console.error("Error al enviar la opinión:", error);
+      alert("Error al enviar la opinión");
+    }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Bienvenido, Cliente</h1>
+    <div style={{ 
+      padding: "20px", 
+      backgroundColor: "rgba(255, 255, 255, 0.8)", 
+      borderRadius: "10px", 
+      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)", 
+    }}>
+      <h1>Bienvenido, {user?.nombre}</h1>
       <button onClick={() => navigate("/")} style={{ marginBottom: "20px" }}>Volver al Inicio</button>
 
-      {/* Formulario de Reserva */}
+      {/* Formulario para dejar opinión */}
       <div style={{ marginBottom: "40px" }}>
-        <h2>Reservar Habitación</h2>
-        <form onSubmit={handleReservaSubmit}>
-          <input type="text" name="nombre" placeholder="Nombre Completo" onChange={handleReservaChange} required />
-          <input type="email" name="email" placeholder="Correo Electrónico" onChange={handleReservaChange} required />
-          <input type="date" name="fecha" onChange={handleReservaChange} required />
-          <select name="habitacion" onChange={handleReservaChange} required>
-            <option value="">Selecciona una habitación</option>
-            <option value="Habitación 1">Habitación 1</option>
-            <option value="Habitación 2">Habitación 2</option>
-            <option value="Habitación 3">Habitación 3</option>
-          </select>
-          <button type="submit">Confirmar Reserva</button>
-        </form>
-      </div>
-
-      {/* Formulario de Opinión */}
-      <div>
         <h2>Dejar una Opinión</h2>
-        <form onSubmit={handleOpinionSubmit}>
-          <input type="text" name="usuario" value={formOpinion.usuario} readOnly />
-          <textarea name="comentario" placeholder="Escribe tu comentario" onChange={handleOpinionChange} required />
-          <input type="number" name="calificacion" placeholder="Calificación (1-5)" min="1" max="5" onChange={handleOpinionChange} required />
-          <button type="submit">Enviar Opinión</button>
+        <form onSubmit={handleSubmitOpinion}>
+          <label htmlFor="habitacion">Selecciona una habitación: </label>
+          <select
+            id="habitacion"
+            value={selectedHabitacion}
+            onChange={(e) => setSelectedHabitacion(e.target.value)}
+            required
+            style={{ width: "100%", padding: "10px", margin: "10px 0" }}
+          >
+            <option value="">Selecciona una habitación</option>
+            {habitaciones.map((habitacion) => (
+              <option key={habitacion._id} value={habitacion._id}>
+                {habitacion.nombre}
+              </option>
+            ))}
+          </select>
+
+          <textarea
+            placeholder="Escribe tu comentario"
+            value={comentario}
+            onChange={(e) => setComentario(e.target.value)}
+            required
+            style={{ width: "100%", padding: "10px", margin: "10px 0" }}
+          />
+
+          <label htmlFor="calificacion">Calificación (1-5): </label>
+          <input
+            type="number"
+            id="calificacion"
+            value={calificacion}
+            onChange={(e) => setCalificacion(e.target.value)}
+            min="1"
+            max="5"
+            required
+            style={{ width: "100%", padding: "10px", margin: "10px 0" }}
+          />
+
+          <button type="submit" style={{ width: "100%", padding: "10px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+            Enviar Opinión
+          </button>
         </form>
       </div>
     </div>

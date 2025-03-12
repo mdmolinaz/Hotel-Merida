@@ -51,5 +51,17 @@ router.post("/:id/reviews", async (req, res) => {
     res.status(500).json({ mensaje: "Error al agregar la reseña" });
   }
 });
+   
+// Agregar una nueva habitación
+router.post("/", async (req, res) => {
+  try {
+    const habitacion = new Habitacion(req.body);
+    await habitacion.save();
+    res.status(201).json({ mensaje: "Habitación agregada correctamente", habitacion });
+  } catch (error) {
+    console.error("Error al agregar habitación:", error);
+    res.status(500).json({ mensaje: "Error al agregar habitación" });
+  }
+});
 
 export default router;
